@@ -13,7 +13,7 @@ from cutplace.ranges import Range
 from cutplace.validio import Reader, Writer, validate, rows
 
 #: Package version information.
-__version__ = pkg_resources.get_distribution(__name__).version
+__version__ = pkg_resources.get_distribution("ytec-cutplace").version
 
 #: Public classes and functions.
 __all__ = [
