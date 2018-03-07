@@ -42,7 +42,7 @@ __location__ = os.path.join(os.getcwd(), os.path.dirname(
 
 # determine root package and package path if namespace package is used
 pyscaffold_version = "2.2.1"
-package = "cutplace"
+package = "ytec-cutplace"
 namespace = []
 root_pkg = namespace[0] if namespace else package
 if namespace:
