@@ -192,6 +192,43 @@ class ReaderTest(unittest.TestCase):
                         self, str(anticipated_error),
                         "* (R3C1): cannot accept field 'digit': value must be an integer number: 'a'")
 
+    def test_quoting_can_be_disabled(self):
+        cid_text = '\n'.join([
+            'd,format,delimited',
+            'd,header,1',
+            'd,quoting,none',
+            'f,name',
+        ])
+        data_text = '\n'.join([
+            'name',
+            '"First Last"',
+            'First d\'Last',
+        ])
+
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                rows = list(reader.rows())
+        self.assertEqual([['"First Last"'], ['First d\'Last']], rows)
+
+    def test_quoting_is_enabled_by_default(self):
+        cid_text = '\n'.join([
+            'd,format,delimited',
+            'd,header,1',
+            'f,name',
+        ])
+        data_text = '\n'.join([
+            'name',
+            '"First Last"',
+            'First d\'Last',
+        ])
+
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                rows = list(reader.rows())
+        self.assertEqual([['First Last'], ['First d\'Last']], rows)
+
 
 class WriterTest(unittest.TestCase):
     def setUp(self):

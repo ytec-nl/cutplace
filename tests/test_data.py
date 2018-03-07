@@ -310,6 +310,15 @@ class DataFormatTest(unittest.TestCase):
             self, errors.InterfaceError, "data format property 'item_delimiter' must not be 0 (*)",
             delimited_format.set_property, data.KEY_ITEM_DELIMITER, '\x00')
 
+    def test_can_set_quoting(self):
+        delimited_format = data.DataFormat(data.FORMAT_DELIMITED)
+        delimited_format.set_property(data.KEY_QUOTING, 'all')
+        self.assertEqual(delimited_format.quoting, 1)
+
+    def test_fails_on_non_csv_compliant_quoting(self):
+        fixed_format = data.DataFormat(data.FORMAT_FIXED)
+        self.assertRaises(errors.InterfaceError, fixed_format.set_property, data.KEY_QUOTING, 'xxx')
+
 
 if __name__ == '__main__':
     logging.basicConfig()
