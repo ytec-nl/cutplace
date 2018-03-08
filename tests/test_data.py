@@ -319,6 +319,18 @@ class DataFormatTest(unittest.TestCase):
         fixed_format = data.DataFormat(data.FORMAT_FIXED)
         self.assertRaises(errors.InterfaceError, fixed_format.set_property, data.KEY_QUOTING, 'xxx')
 
+    def test_can_set_strict_field_names(self):
+        delimited_format = data.DataFormat(data.FORMAT_DELIMITED)
+        delimited_format.set_property(data.KEY_STRICT_FIELD_NAMES, 'true')
+        self.assertTrue(delimited_format.strict_field_names)
+
+    def test_fails_on_non_bool_strict_field_names(self):
+        fixed_format = data.DataFormat(data.FORMAT_FIXED)
+        self.assertRaises(
+            errors.InterfaceError, fixed_format.set_property,
+            data.KEY_STRICT_FIELD_NAMES, 'xxx'
+        )
+
 
 if __name__ == '__main__':
     logging.basicConfig()

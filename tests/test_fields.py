@@ -476,6 +476,9 @@ class PublicFieldFunctionTest(unittest.TestCase):
     def test_fails_on_non_ascii_character(self):
         self.assertRaises(errors.InterfaceError, fields.validated_field_name, "aä")
 
+    def test_field_names_are_strict_by_default(self):
+        self.assertRaises(errors.InterfaceError, fields.validated_field_name, ' ~!@#$%^&*()_ Name')
+
 
 if __name__ == '__main__':  # pragma: no cover
     logging.basicConfig()

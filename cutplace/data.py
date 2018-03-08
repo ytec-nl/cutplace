@@ -83,6 +83,7 @@ KEY_SKIP_INITIAL_SPACE = "skip_initial_space"
 KEY_DECIMAL_SEPARATOR = "decimal_separator"
 KEY_THOUSANDS_SEPARATOR = "thousands_separator"
 KEY_QUOTING = "quoting"
+KEY_STRICT_FIELD_NAMES = 'strict_field_names'
 
 _VALID_QUOTE_CHARACTERS = ["\"", "\'"]
 _VALID_ESCAPE_CHARACTERS = ["\"", "\\"]
@@ -127,6 +128,7 @@ class DataFormat(object):
         self._allowed_characters = None
         self._encoding = 'cp1252'
         self._quoting = csv.QUOTE_MINIMAL
+        self._strict_field_names = True
         if self.format == FORMAT_DELIMITED:
             self._escape_character = '"'
             self._item_delimiter = ','
@@ -203,6 +205,14 @@ class DataFormat(object):
         assert new_header >= 0
 
         self._header = new_header
+
+    @property
+    def strict_field_names(self):
+        return self._strict_field_names
+
+    @strict_field_names.setter
+    def strict_field_names(self, value):
+        self._strict_field_names = value
 
     @property
     def item_delimiter(self):
@@ -374,6 +384,8 @@ class DataFormat(object):
         elif name == KEY_QUOTING:
             result = DataFormat._validated_choice(KEY_QUOTING, value, _VALID_QUOTING, location, ignore_case=True)
             self.quoting = READABLE_TO_CSV_QUOTING_FORMAT[result]
+        elif name == KEY_STRICT_FIELD_NAMES:
+            self.strict_field_names = DataFormat._validated_bool(KEY_STRICT_FIELD_NAMES, value, location)
         else:
             assert False, 'name=%r' % name
 

@@ -229,6 +229,35 @@ class ReaderTest(unittest.TestCase):
                 rows = list(reader.rows())
         self.assertEqual([['First Last'], ['First d\'Last']], rows)
 
+    def test_that_strict_field_names_can_be_disabled(self):
+        cid_text = '\n'.join([
+            'd,format,delimited',
+            'd,header,1',
+            'd,strict field names,false',
+            'f, ~!@#$%^&*()_ Name'
+        ])
+        data_text = '\n'.join([
+            'name',
+            'First Last',
+        ])
+
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                rows = list(reader.rows())
+        self.assertEqual([['First Last']], rows)
+
+    def test_strict_field_names_are_enforced_by_default(self):
+        cid_text = '\n'.join([
+            'd,format,delimited',
+            'd,header,1',
+            'f, ~!@#$%^&*()_ Name'
+        ])
+        data_text = '\n'.join([
+            'name',
+            'First Last',
+        ])
+
 
 class WriterTest(unittest.TestCase):
     def setUp(self):

@@ -332,7 +332,10 @@ class Cid(object):
         items = (possibly_incomplete_items + 6 * [''])[:6]
 
         # Obtain field name.
-        field_name = fields.validated_field_name(items[0], self._location)
+        if self.data_format.strict_field_names:
+            field_name = fields.validated_field_name(items[0], self._location)
+        else:
+            field_name = items[0].strip()
         if field_name in self._field_name_to_format_map:
             # TODO: Add see_also_location pointing to previous declaration.
             raise errors.InterfaceError(
