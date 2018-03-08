@@ -1,6 +1,8 @@
 # Travis configuration file using the build matrix feature
 # Read more under http://docs.travis-ci.com/user/build-configuration/
 language: python
+sudo: required
+dist: trusty
 virtualenv:
   system_site_packages: true
 env:
