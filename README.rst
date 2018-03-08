@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/roskakori/cutplace.svg?branch=master
-    :target: https://travis-ci.org/roskakori/cutplace
+.. image:: https://travis-ci.org/ytec-nl/ytec-cutplace.svg?branch=master
+    :target: https://travis-ci.org/ytec-nl/ytec-cutplace
     :alt: Build Status
 
 .. image:: https://coveralls.io/repos/roskakori/cutplace/badge.png?branch=master
