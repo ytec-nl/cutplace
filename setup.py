@@ -242,8 +242,7 @@ def setup_package():
           data_files=data_files,
           command_options=command_options,
           entry_points={'console_scripts': console_scripts},
-          use_scm_version={'version_scheme': version2str,
-                           'local_scheme': local_version2str},
+          version=pyscaffold_version,
           zip_safe=False)  # do not zip egg file after setup.py install
 
 
