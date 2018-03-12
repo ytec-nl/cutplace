@@ -331,6 +331,18 @@ class DataFormatTest(unittest.TestCase):
             data.KEY_STRICT_FIELD_NAMES, 'xxx'
         )
 
+    def test_can_set_validate_header_row_against_field_names(self):
+        fixed_format = data.DataFormat(data.FORMAT_FIXED)
+        fixed_format.set_property(data.KEY_VALIDATE_HEADER_ROW_AGAINST_FIELD_NAMES, 'true')
+        self.assertTrue(fixed_format.validate_header_row_against_field_names)
+
+    def test_fails_on_non_bool_validate_header_row_against_field_names(self):
+        fixed_format = data.DataFormat(data.FORMAT_FIXED)
+        self.assertRaises(
+            errors.InterfaceError, fixed_format.set_property,
+            data.KEY_VALIDATE_HEADER_ROW_AGAINST_FIELD_NAMES, 'xxx'
+        )
+
 
 if __name__ == '__main__':
     logging.basicConfig()

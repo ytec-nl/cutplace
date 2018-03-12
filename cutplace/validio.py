@@ -166,6 +166,41 @@ class BaseValidator(object):
                     check.cleanup()
             self._is_closed = True
 
+    def validate_header(self, actual):
+        """
+        Validate the header row against the defined field names. `Header` must be set to `1`.
+
+        :raises cutplace.errors.DataError: if any the column names and field names do not match
+        exactly (it is both order and case sensitive).
+        """
+        expected = self.cid.field_names
+        missing = sorted(list(set(expected) - set(actual)))
+        unexpected = sorted(list(set(actual) - set(expected)))
+
+        missing_msg = ''
+        if missing:
+            missing_msg = '\nThe following columns are missing:\n  {missing}'
+
+        unexpected_msg = ''
+        if unexpected:
+            unexpected_msg = '\nThe following columns are unexpected:\n  {unexpected}'
+
+        if actual != expected:
+            error_msg = 'The following columns are expected in the header row:\n  {expected}'
+            if set(actual) == set(expected):
+                error_msg += (
+                    '\nThe order of the columns does not match. '
+                    'The following columns were received:\n  {actual}'
+                )
+            error_msg += missing_msg + unexpected_msg
+            raise errors.DataError(error_msg.format(
+                    expected=expected,
+                    missing=missing,
+                    unexpected=unexpected,
+                    actual=actual
+                )
+            )
+
 
 class Reader(BaseValidator):
     def __init__(self, cid_or_path, source_data_stream_or_path, on_error='raise', validate_until=None):
@@ -253,6 +288,19 @@ class Reader(BaseValidator):
                         self.validate_row(row)
                     self.accepted_rows_count += 1
                     yield row
+                else:
+                    if self.cid.data_format.validate_header_row_against_field_names:
+                        # we don't know, which header row to validate if there are multiple ones
+                        if header_row_count > 1:
+                            raise errors.InterfaceError(
+                                "Cannot validate the header row, when 'Header' is set to '{count}'. "
+                                "Either set 'Header' to '1' or disable header validation with "
+                                "'Validate header row against field names' set to 'False'.".format(
+                                    count=header_row_count
+                                )
+                            )
+
+                        self.validate_header(row)
             except errors.DataError as error:
                 if self.on_error == 'raise':
                     raise

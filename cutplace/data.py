@@ -75,6 +75,7 @@ KEY_ENCODING = "encoding"
 KEY_ESCAPE_CHARACTER = "escape_character"
 KEY_FORMAT = 'format'
 KEY_HEADER = "header"
+KEY_VALIDATE_HEADER_ROW_AGAINST_FIELD_NAMES = "validate_header_row_against_field_names"
 KEY_ITEM_DELIMITER = "item_delimiter"
 KEY_LINE_DELIMITER = "line_delimiter"
 KEY_QUOTE_CHARACTER = "quote_character"
@@ -124,6 +125,7 @@ class DataFormat(object):
         # HACK: Treat ``format_name`` 'csv' as synonym for ``FORMAT_DELIMITED``.
         self._format = format_name if format_name != 'csv' else FORMAT_DELIMITED
         self._header = 0
+        self._validate_header_row_against_field_names = False
         self._is_valid = False
         self._allowed_characters = None
         self._encoding = 'cp1252'
@@ -205,6 +207,14 @@ class DataFormat(object):
         assert new_header >= 0
 
         self._header = new_header
+
+    @property
+    def validate_header_row_against_field_names(self):
+        return self._validate_header_row_against_field_names
+
+    @validate_header_row_against_field_names.setter
+    def validate_header_row_against_field_names(self, value):
+        self._validate_header_row_against_field_names = value
 
     @property
     def strict_field_names(self):
@@ -343,6 +353,9 @@ class DataFormat(object):
             self.encoding = value
         elif name == KEY_HEADER:
             self.header = DataFormat._validated_int_at_least_0(name, value, location)
+        elif name == KEY_VALIDATE_HEADER_ROW_AGAINST_FIELD_NAMES:
+            self.validate_header_row_against_field_names = DataFormat._validated_bool(
+                KEY_VALIDATE_HEADER_ROW_AGAINST_FIELD_NAMES, value, location)
         elif name == KEY_ALLOWED_CHARACTERS:
             try:
                 self._allowed_characters = ranges.Range(value)

@@ -258,6 +258,109 @@ class ReaderTest(unittest.TestCase):
             'First Last',
         ])
 
+        self.assertRaises(errors.InterfaceError, interface.create_cid_from_string, cid_text)
+
+    def test_not_matching_column_name_raises_data_error(self):
+        cid_text = '\n'.join([
+            'd,format,csv',
+            'd,header,1',
+            'd,validate header row against field names,true',
+            'f,name,',
+            'f,age,',
+        ])
+        data_text = '\n'.join([
+            'age',
+            '52'
+        ])
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                with self.assertRaises(errors.DataError) as e:
+                    list(reader.rows())
+        self.assertEqual(
+            "The following columns are expected in the header row:\n"
+            "  ['name', 'age']\n"
+            "The following columns are missing:\n"
+            "  ['name']",
+            str(e.exception)
+        )
+
+    def test_only_first_header_row_can_be_validated(self):
+        cid_text = '\n'.join([
+            'd,format,csv',
+            'd,header,2',
+            'd,validate header row against field names,true',
+            'f,age,',
+        ])
+        data_text = '\n'.join([
+            'age',
+            '52'
+        ])
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                with self.assertRaises(errors.InterfaceError) as e:
+                    list(reader.rows())
+        self.assertEqual(
+            "Cannot validate the header row, when 'Header' is set to '2'. "
+            "Either set 'Header' to '1' or disable header validation with "
+            "'Validate header row against field names' set to 'False'.",
+            str(e.exception)
+        )
+
+    def test_missing_columns_raise_error_when_validating_header(self):
+        cid_text = '\n'.join([
+            'd,format,csv',
+            'd,header,1',
+            'd,validate header row against field names,true',
+            'f,name,',
+            'f,age,',
+        ])
+        data_text = '\n'.join([
+            'age',
+            '52'
+        ])
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                with self.assertRaises(errors.DataError):
+                    list(reader.rows())
+
+    def test_extra_columns_raise_error_when_validating_header(self):
+        cid_text = '\n'.join([
+            'd,format,csv',
+            'd,header,1',
+            'd,validate header row against field names,true',
+            'f,age,',
+        ])
+        data_text = '\n'.join([
+            'name,age',
+            'me,52'
+        ])
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                with self.assertRaises(errors.DataError):
+                    list(reader.rows())
+
+    def test_shuffled_columns_raise_error_when_validating_header(self):
+        cid_text = '\n'.join([
+            'd,format,csv',
+            'd,header,1',
+            'd,validate header row against field names,true',
+            'f,age,',
+            'f,name',
+        ])
+        data_text = '\n'.join([
+            'name,age',
+            'me,52'
+        ])
+        cid = interface.create_cid_from_string(cid_text)
+        with io.StringIO(data_text) as data:
+            with validio.Reader(cid, data) as reader:
+                with self.assertRaises(errors.DataError):
+                    list(reader.rows())
+
 
 class WriterTest(unittest.TestCase):
     def setUp(self):
