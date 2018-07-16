@@ -114,7 +114,7 @@ class DateTimeFieldFormatTest(unittest.TestCase):
     def test_can_accept_empty_date(self):
         field_format = fields.DateTimeFieldFormat("x", True, None, "YYYY-MM-DD", _ANY_FORMAT)
         self.assertEqual(field_format.validated(""), None)
-        self.assertNotEquals(field_format.validated("2000-01-01"), None)
+        self.assertNotEqual(field_format.validated("2000-01-01"), None)
 
     def test_fails_on_broken_dates(self):
         field_format = fields.DateTimeFieldFormat("x", False, None, "YYYY-MM-DD", _ANY_FORMAT)

@@ -226,16 +226,16 @@ class RangeTest(unittest.TestCase):
 class DecimalRangeTest(unittest.TestCase):
 
     def test_can_handle_proper_decimal_ranges(self):
-        self.assertEquals(ranges.DecimalRange("1.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('1.1'))])
-        self.assertEquals(ranges.DecimalRange("1...").items, [(1, None)])
-        self.assertEquals(ranges.DecimalRange("...1.").items, [(None, decimal.Decimal('1'))])
-        self.assertEquals(ranges.DecimalRange("1.1" + "\u2026" + "2.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('2.1'))])
-        self.assertEquals(ranges.DecimalRange("-1.1...2").items, [(decimal.Decimal('-1.1'), 2)])
+        self.assertEqual(ranges.DecimalRange("1.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('1.1'))])
+        self.assertEqual(ranges.DecimalRange("1...").items, [(1, None)])
+        self.assertEqual(ranges.DecimalRange("...1.").items, [(None, decimal.Decimal('1'))])
+        self.assertEqual(ranges.DecimalRange("1.1" + "\u2026" + "2.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('2.1'))])
+        self.assertEqual(ranges.DecimalRange("-1.1...2").items, [(decimal.Decimal('-1.1'), 2)])
 
-        self.assertEquals(ranges.DecimalRange("1.1...").items, [(decimal.Decimal('1.1'), None)])
-        self.assertEquals(ranges.DecimalRange("...1.1").items, [(None, decimal.Decimal('1.1'))])
-        self.assertEquals(ranges.DecimalRange("1.1...2.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('2.1'))])
-        self.assertEquals(ranges.DecimalRange("-1.1...2.1").items, [(decimal.Decimal('-1.1'), decimal.Decimal('2.1'))])
+        self.assertEqual(ranges.DecimalRange("1.1...").items, [(decimal.Decimal('1.1'), None)])
+        self.assertEqual(ranges.DecimalRange("...1.1").items, [(None, decimal.Decimal('1.1'))])
+        self.assertEqual(ranges.DecimalRange("1.1...2.1").items, [(decimal.Decimal('1.1'), decimal.Decimal('2.1'))])
+        self.assertEqual(ranges.DecimalRange("-1.1...2.1").items, [(decimal.Decimal('-1.1'), decimal.Decimal('2.1'))])
 
     def test_can_set_precision_and_scale(self):
         empty_range = ranges.DecimalRange('')
@@ -352,8 +352,8 @@ class DecimalRangeTest(unittest.TestCase):
         self.assertRaises(errors.InterfaceError, ranges.DecimalRange, "0x7F")
 
     def test_can_parse_multiple_ranges(self):
-        self.assertEquals(ranges.DecimalRange("1.1, 3").items, [(decimal.Decimal('1.1'), decimal.Decimal('1.1')), (3, 3)])
-        self.assertEquals(ranges.DecimalRange("1...2.3, 5...").items, [(1, decimal.Decimal('2.3')), (5, None)])
+        self.assertEqual(ranges.DecimalRange("1.1, 3").items, [(decimal.Decimal('1.1'), decimal.Decimal('1.1')), (3, 3)])
+        self.assertEqual(ranges.DecimalRange("1...2.3, 5...").items, [(1, decimal.Decimal('2.3')), (5, None)])
 
     def test_fails_on_parse_symbolic_range(self):
         dev_test.assert_raises_and_fnmatches(
@@ -371,26 +371,26 @@ class DecimalRangeTest(unittest.TestCase):
             ranges.DecimalRange, "a")
 
     def test_can_use_default_range(self):
-        self.assertEquals(ranges.DecimalRange("", "2.1...3").items, [(decimal.Decimal('2.1'), 3)])
+        self.assertEqual(ranges.DecimalRange("", "2.1...3").items, [(decimal.Decimal('2.1'), 3)])
 
     def test_can_override_default_range(self):
-        self.assertEquals(ranges.DecimalRange("1.1...2", "2...3").items, [(decimal.Decimal('1.1'), 2)])
+        self.assertEqual(ranges.DecimalRange("1.1...2", "2...3").items, [(decimal.Decimal('1.1'), 2)])
 
     def test_can_get_lower_limit(self):
-        self.assertEquals(ranges.DecimalRange("5.5...9").lower_limit, decimal.Decimal('5.5'))
-        self.assertEquals(ranges.DecimalRange("0...").lower_limit, 0)
-        self.assertEquals(ranges.DecimalRange("...0").lower_limit, None)
-        self.assertEquals(ranges.DecimalRange("...1, 3...").lower_limit, None)
-        self.assertEquals(ranges.DecimalRange("5...9").lower_limit, 5)
-        self.assertEquals(ranges.DecimalRange("1.1...2, 5...9").lower_limit, decimal.Decimal('1.1'))
-        self.assertEquals(ranges.DecimalRange("5...9, 1.1...2").lower_limit, decimal.Decimal('1.1'))
+        self.assertEqual(ranges.DecimalRange("5.5...9").lower_limit, decimal.Decimal('5.5'))
+        self.assertEqual(ranges.DecimalRange("0...").lower_limit, 0)
+        self.assertEqual(ranges.DecimalRange("...0").lower_limit, None)
+        self.assertEqual(ranges.DecimalRange("...1, 3...").lower_limit, None)
+        self.assertEqual(ranges.DecimalRange("5...9").lower_limit, 5)
+        self.assertEqual(ranges.DecimalRange("1.1...2, 5...9").lower_limit, decimal.Decimal('1.1'))
+        self.assertEqual(ranges.DecimalRange("5...9, 1.1...2").lower_limit, decimal.Decimal('1.1'))
 
     def test_can_get_upper_limit(self):
-        self.assertEquals(ranges.DecimalRange("1...2.1").upper_limit, decimal.Decimal('2.1'))
-        self.assertEquals(ranges.DecimalRange("0...").upper_limit, None)
-        self.assertEquals(ranges.DecimalRange("...0").upper_limit, 0)
-        self.assertEquals(ranges.DecimalRange("...1, 3...").upper_limit, None)
-        self.assertEquals(ranges.DecimalRange("1...2, 5...9.3").upper_limit, decimal.Decimal('9.3'))
+        self.assertEqual(ranges.DecimalRange("1...2.1").upper_limit, decimal.Decimal('2.1'))
+        self.assertEqual(ranges.DecimalRange("0...").upper_limit, None)
+        self.assertEqual(ranges.DecimalRange("...0").upper_limit, 0)
+        self.assertEqual(ranges.DecimalRange("...1, 3...").upper_limit, None)
+        self.assertEqual(ranges.DecimalRange("1...2, 5...9.3").upper_limit, decimal.Decimal('9.3'))
 
     def test_can_process_empty_range(self):
         self.assertEqual(ranges.DecimalRange("").items, None)
