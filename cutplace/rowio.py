@@ -37,6 +37,7 @@ from cutplace import data
 from cutplace import errors
 from cutplace import _compat
 from cutplace import _tools
+from cutplace.django_wrapper import ugettext as _
 
 # Valid line delimiters for  `fixed_rows()`.
 _VALID_FIXED_ANY_LINE_DELIMITERS = ('\n', '\r', '\r\n')
@@ -157,9 +158,9 @@ def excel_rows(source_path, sheet=1):
                 yield row
                 location.advance_line()
     except xlrd.XLRDError as error:
-        raise errors.DataFormatError('cannot read Excel file: %s' % error, location)
+        raise errors.DataFormatError(_('cannot read Excel file: %s') % error, location)
     except UnicodeError as error:
-        raise errors.DataFormatError('cannot decode Excel data: %s' % error, location)
+        raise errors.DataFormatError(_('cannot decode Excel data: %s') % error, location)
 
 
 def _raise_delimited_data_format_error(delimited_path, reader, error):
@@ -167,7 +168,7 @@ def _raise_delimited_data_format_error(delimited_path, reader, error):
     line_number = reader.line_num
     if line_number > 0:
         location.advance_line(line_number)
-    raise errors.DataFormatError('cannot parse delimited file: %s' % error, location)
+    raise errors.DataFormatError(_('cannot parse delimited file: %s') % error, location)
 
 
 def _as_delimited_keywords(delimited_data_format):
@@ -256,17 +257,17 @@ def ods_rows(source_ods_path, sheet=1):
                 try:
                     xml_data = zip_archive.read("content.xml")
                 except Exception as error:
-                    raise errors.DataFormatError('cannot extract content.xml for ODS spreadsheet: %s' % error, location)
+                    raise errors.DataFormatError(_('cannot extract content.xml for ODS spreadsheet: %s') % error, location)
         except errors.DataFormatError:
             raise
         except Exception as error:
-            raise errors.DataFormatError('cannot uncompress ODS spreadsheet: %s' % error, location)
+            raise errors.DataFormatError(_('cannot uncompress ODS spreadsheet: %s') % error, location)
 
         with io.BytesIO(xml_data) as xml_stream:
             try:
                 tree = ElementTree.parse(xml_stream)
             except Exception as error:
-                raise errors.DataFormatError('cannot parse content.xml: %s' % error, location)
+                raise errors.DataFormatError(_('cannot parse content.xml: %s') % error, location)
 
         return tree.getroot()
 
@@ -279,7 +280,7 @@ def ods_rows(source_ods_path, sheet=1):
         raise errors.DataFormatError(error_message, errors.Location(source_ods_path))
     table_element = table_elements[sheet - 1]
     location = errors.Location(source_ods_path, has_cell=True, has_sheet=True)
-    for _ in range(sheet - 1):
+    for _i in range(sheet - 1):
         location.advance_sheet()
     for table_row in _findall(table_element, 'table:table-row', namespaces=_OOO_NAMESPACES):
         row = []
@@ -289,11 +290,11 @@ def ods_rows(source_ods_path, sheet=1):
                 repeated_count = int(repeated_text)
                 if repeated_count < 1:
                     raise errors.DataFormatError(
-                        'table:number-columns-repeated is %s but must be at least 1'
+                        _('table:number-columns-repeated is %s but must be at least 1')
                         % _compat.text_repr(repeated_text), location)
             except ValueError:
                 raise errors.DataFormatError(
-                    'table:number-columns-repeated is %s but must be an integer' % _compat.text_repr(repeated_text),
+                    _('table:number-columns-repeated is %s but must be an integer') % _compat.text_repr(repeated_text),
                     location)
             if six.PY2:
                 text_p = table_cell.find('{%s}p' % _OOO_NAMESPACES['text'])
@@ -381,11 +382,11 @@ def fixed_rows(fixed_source, encoding, field_name_and_lengths, line_delimiter='a
                 if actual_line_delimiter not in _VALID_FIXED_ANY_LINE_DELIMITERS:
                     valid_line_delimiters = _tools.human_readable_list(_VALID_FIXED_ANY_LINE_DELIMITERS)
                     raise errors.DataFormatError(
-                        'line delimiter is %s but must be one of: %s' %
+                        _('line delimiter is %s but must be one of: %s') %
                         (_compat.text_repr(actual_line_delimiter), valid_line_delimiters), location)
             elif actual_line_delimiter != line_delimiter:
                 raise errors.DataFormatError(
-                    'line delimiter is %s but must be %s'
+                    _('line delimiter is %s but must be %s')
                     % (_compat.text_repr(actual_line_delimiter), _compat.text_repr(line_delimiter)), location)
         return result
 
@@ -420,13 +421,13 @@ def fixed_rows(fixed_source, encoding, field_name_and_lengths, line_delimiter='a
                 item_length = len(item)
                 if item_length == 0:
                     if field_index > 0:
-                        names = [name for name, _ in field_name_and_lengths]
-                        lengths = [length for _, length in field_name_and_lengths]
+                        names = [name for name, _length in field_name_and_lengths]
+                        lengths = [length for _name, length in field_name_and_lengths]
                         previous_field_index = field_index - 1
                         characters_needed_count = sum(lengths[field_index:])
                         list_of_missing_field_names = _tools.human_readable_list(names[field_index:], 'and')
                         raise errors.DataFormatError(
-                            "after field '%s' %d characters must follow for: %s"
+                            _("after field '%s' %d characters must follow for: %s")
                             % (names[previous_field_index], characters_needed_count, list_of_missing_field_names),
                             location)
                     # End of input reached.
@@ -437,7 +438,7 @@ def fixed_rows(fixed_source, encoding, field_name_and_lengths, line_delimiter='a
                     field_index += 1
                 else:
                     raise errors.DataFormatError(
-                        "cannot read field '%s': need %d characters but found only %d: %s"
+                        _("cannot read field '%s': need %d characters but found only %d: %s")
                         % (field_name, field_length, item_length, _compat.text_repr(item)), location)
             if has_data and not _has_data_after_skipped_line_delimiter():
                 has_data = False
@@ -570,7 +571,7 @@ class DelimitedRowWriter(AbstractRowWriter):
         try:
             self._delimited_writer.writerow(row_to_write)
         except UnicodeEncodeError as error:
-            raise errors.DataFormatError('cannot write data row: %s; row=%s' % (error, row_to_write), self.location)
+            raise errors.DataFormatError(_('cannot write data row: %s; row=%s') % (error, row_to_write), self.location)
         self._location.advance_line()
 
 
@@ -632,7 +633,7 @@ class FixedRowWriter(AbstractRowWriter):
             self._target_stream.write(''.join(row_to_write))
         except UnicodeEncodeError as error:
             raise errors.DataFormatError(
-                'cannot write data row: %s; row=%s'
+                _('cannot write data row: %s; row=%s')
                 % (error, row_to_write), self.location)
         if self._line_separator is not None:
             self._target_stream.write(self._line_separator)

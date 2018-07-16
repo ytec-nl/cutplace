@@ -29,6 +29,7 @@ from cutplace import errors
 from cutplace import interface
 from cutplace import rowio
 from cutplace import _compat
+from cutplace.django_wrapper import ugettext as _
 
 # Valid choices for ``on_error`` parameter.
 _VALID_ON_ERROR_CHOICES = ('continue', 'raise', 'yield')
@@ -119,12 +120,12 @@ class BaseValidator(object):
         actual_item_count = len(row)
         if actual_item_count < self._expected_item_count:
             raise errors.DataError(
-                'row must contain %d fields but only has %d: %s'
+                _('row must contain %d fields but only has %d: %s')
                 % (self._expected_item_count, actual_item_count, row),
                 self.location)
         if actual_item_count > self._expected_item_count:
             raise errors.DataError(
-                'row must contain %d fields but has %d, additional values are: %s'
+                _('row must contain %d fields but has %d, additional values are: %s')
                 % (self._expected_item_count, actual_item_count, row[self._expected_item_count:]),
                 self.location)
 
@@ -135,7 +136,7 @@ class BaseValidator(object):
             try:
                 if not isinstance(field_value, six.text_type):
                     raise errors.FieldValueError(
-                        'type must be %s instead of %s: %s'
+                        _('type must be %s instead of %s: %s')
                         % (six.text_type.__name__, type(field_value).__name__, _compat.text_repr(field_value)))
                 field_to_validate.validated(field_value)
             except errors.FieldValueError as error:
@@ -179,16 +180,16 @@ class BaseValidator(object):
 
         missing_msg = ''
         if missing:
-            missing_msg = '\nThe following columns are missing:\n  {missing}'
+            missing_msg = _('\nThe following columns are missing:\n  {missing}')
 
         unexpected_msg = ''
         if unexpected:
-            unexpected_msg = '\nThe following columns are unexpected:\n  {unexpected}'
+            unexpected_msg = _('\nThe following columns are unexpected:\n  {unexpected}')
 
         if actual != expected:
-            error_msg = 'The following columns are expected in the header row:\n  {expected}'
+            error_msg = _('The following columns are expected in the header row:\n  {expected}')
             if set(actual) == set(expected):
-                error_msg += (
+                error_msg += _(
                     '\nThe order of the columns does not match. '
                     'The following columns were received:\n  {actual}'
                 )
@@ -293,9 +294,9 @@ class Reader(BaseValidator):
                         # we don't know, which header row to validate if there are multiple ones
                         if header_row_count > 1:
                             raise errors.InterfaceError(
-                                "Cannot validate the header row, when 'Header' is set to '{count}'. "
+                                _("Cannot validate the header row, when 'Header' is set to '{count}'. "
                                 "Either set 'Header' to '1' or disable header validation with "
-                                "'Validate header row against field names' set to 'False'.".format(
+                                "'Validate header row against field names' set to 'False'.").format(
                                     count=header_row_count
                                 )
                             )
@@ -322,7 +323,7 @@ class Reader(BaseValidator):
 
         :raises cutplace.errors.DataError: on broken data
         """
-        for _ in self.rows():
+        for _i in self.rows():
             pass
 
 
@@ -439,5 +440,5 @@ def validate(cid_or_path, data_stream_or_path, validate_until=None):
         rows_to_validate = reader.rows()
         if validate_until is not None:
             rows_to_validate = itertools.islice(rows_to_validate, validate_until)
-        for _ in rows_to_validate:
+        for _i in rows_to_validate:
             pass

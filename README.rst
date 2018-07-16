@@ -96,3 +96,11 @@ above example::
 For more information, read the documentation at
 http://cutplace.readthedocs.org/ or visit the project at
 https://github.com/roskakori/cutplace.
+
+Django support
+==============
+
+This project has optional support for Django.
+When used together with Django you can get localized error messages.
+
+In order to use it you need to add `cutplace` to the `INSTALLED_APPS` variable of your Django settings.

@@ -37,6 +37,7 @@ from cutplace import rowio
 from cutplace import _compat
 from cutplace import _tools
 from cutplace._compat import python_2_unicode_compatible
+from cutplace.django_wrapper import ugettext as _
 
 _log = logging.getLogger("cutplace")
 
@@ -165,7 +166,7 @@ class Cid(object):
                     # has been called more than once.
                     class_to_process = None
                 else:
-                    raise errors.CutplaceError("clashing plugin class names must be resolved: %s and %s"
+                    raise errors.CutplaceError(_("clashing plugin class names must be resolved: %s and %s")
                                                % (clashing_class_info, class_to_process_info))
             if class_to_process is not None:
                 result[plain_class_name] = class_to_process
@@ -181,7 +182,7 @@ class Cid(object):
         result = name_to_class_map.get(class_name)
         if result is None:
             raise errors.InterfaceError(
-                "cannot find class for %s %s: related class is %s but must be one of: %s" % (
+                _("cannot find class for %s %s: related class is %s but must be one of: %s") % (
                     type_name, class_qualifier, class_name,
                     _tools.human_readable_list(sorted(name_to_class_map.keys()))), self._location)
         return result
@@ -211,16 +212,16 @@ class Cid(object):
         lower_name = name.lower()
         self._location.advance_cell()
         if name == '':
-            raise errors.InterfaceError('name of data format property must be specified', self._location)
+            raise errors.InterfaceError(_('name of data format property must be specified'), self._location)
         self._location.advance_cell()
         if (self._data_format is None) and (lower_name != data.KEY_FORMAT):
             raise errors.InterfaceError(
-                'first data format row must set property %s instead of %s'
+                ('first data format row must set property %s instead of %s')
                 % (_compat.text_repr(data.KEY_FORMAT), _compat.text_repr(name)),
                 self._location)
         if (self._data_format is not None) and (lower_name == data.KEY_FORMAT):
             raise errors.InterfaceError(
-                'data format already is %s and must be set only once'
+                _('data format already is %s and must be set only once')
                 % _compat.text_repr(self._data_format.format),
                 self._location)
         lower_value = value.lower()
@@ -265,13 +266,13 @@ class Cid(object):
                 elif row_type != '':
                     # Raise error when value is not supported.
                     raise errors.InterfaceError(
-                        'CID row type is "%s" but must be empty or one of: C, D, or F' % row_type, self._location)
+                        _('CID row type is "%s" but must be empty or one of: C, D, or F') % row_type, self._location)
             self._location.advance_line()
         if self.data_format is None:
-            raise errors.InterfaceError('data format must be specified', self._location)
+            raise errors.InterfaceError(_('data format must be specified'), self._location)
         self.data_format.validate()
         if len(self.field_names) == 0:
-            raise errors.InterfaceError('fields must be specified', self._location)
+            raise errors.InterfaceError(_('fields must be specified'), self._location)
 
     def add_field_format(self, field_format):
         """
@@ -320,7 +321,7 @@ class Cid(object):
         assert self._location is not None
 
         if self._data_format is None:
-            raise errors.InterfaceError("data format must be specified before first field", self._location)
+            raise errors.InterfaceError(_("data format must be specified before first field"), self._location)
 
         # Assert that the various lists and maps related to fields are in a consistent state.
         # Ideally this would be a class invariant, but this is Python, not Eiffel.
@@ -339,7 +340,7 @@ class Cid(object):
         if field_name in self._field_name_to_format_map:
             # TODO: Add see_also_location pointing to previous declaration.
             raise errors.InterfaceError(
-                'duplicate field name must be changed to a unique one: %s' % field_name, self._location)
+                _('duplicate field name must be changed to a unique one: %s') % field_name, self._location)
 
         # Obtain example.
         self._location.advance_cell()
@@ -354,7 +355,7 @@ class Cid(object):
             field_is_allowed_to_be_empty = True
         else:
             raise errors.InterfaceError(
-                "mark for empty field must be %s or empty but is %s"
+                _("mark for empty field must be %s or empty but is %s")
                 % (self._EMPTY_INDICATOR, field_is_allowed_to_be_empty_text), self._location)
 
         # Obtain length.
@@ -398,26 +399,26 @@ class Cid(object):
         if self._data_format.format == data.FORMAT_FIXED:
             if field_length.items is None:
                 raise errors.InterfaceError(
-                    "length of field %s must be specified with fixed data format" % _compat.text_repr(field_name),
+                    _("length of field %s must be specified with fixed data format") % _compat.text_repr(field_name),
                     self._location)
             if field_length.lower_limit != field_length.upper_limit:
                 raise errors.InterfaceError(
-                    "length of field %s for fixed data format must be a specific number but is: %s"
+                    _("length of field %s for fixed data format must be a specific number but is: %s")
                     % (_compat.text_repr(field_name), field_format.length), self._location)
             if field_length.lower_limit < 1:
                 raise errors.InterfaceError(
-                    "length of field %s for fixed data format must be at least 1 but is: %d"
+                    _("length of field %s for fixed data format must be at least 1 but is: %d")
                     % (_compat.text_repr(field_name), field_format.length.lower_limit), self._location)
         elif field_length.lower_limit is not None:
             if field_length.lower_limit < 0:
                 raise errors.InterfaceError(
-                    "lower limit for length of field %s must be at least 0 but is: %d"
+                    _("lower limit for length of field %s must be at least 0 but is: %d")
                     % (_compat.text_repr(field_name), field_format.length.lower_limit), self._location)
         elif field_length.upper_limit is not None:
             # Note: 0 as upper limit is valid for a field that must always be empty.
             if field_length.upper_limit < 0:
                 raise errors.InterfaceError(
-                    "upper limit for length of field %s must be at least 0 but is: %d"
+                    _("upper limit for length of field %s must be at least 0 but is: %d")
                     % (_compat.text_repr(field_name), field_format.length.upper_limit), self._location)
 
         # Set and validate example in case there is one.
@@ -427,7 +428,7 @@ class Cid(object):
             except errors.FieldValueError as error:
                 self._location.set_cell(2)
                 raise errors.InterfaceError(
-                    "cannot validate example for field %s: %s" % (_compat.text_repr(field_name), error),
+                    _("cannot validate example for field %s: %s") % (_compat.text_repr(field_name), error),
                     self._location)
 
         self._location.set_cell(1)
@@ -477,13 +478,13 @@ class Cid(object):
         self._location.advance_cell()
         if check_description == '':
             raise errors.InterfaceError(
-                'check description must be specified', self._location)
+                _('check description must be specified'), self._location)
         self._location.advance_cell()
         check_class_name = check_type + "Check"
         if check_class_name not in self._check_name_to_class_map:
             list_of_available_check_types = _tools.human_readable_list(sorted(self._check_name_to_class_map.keys()))
             raise errors.InterfaceError(
-                "check type is '%s' but must be one of: %s"
+                _("check type is '%s' but must be one of: %s")
                 % (check_type, list_of_available_check_types),
                 self._location)
         _log.debug("create check: %s(%r, %r)", check_type, check_description, check_rule)
@@ -494,7 +495,7 @@ class Cid(object):
         existing_check = self._check_name_to_check_map.get(check_description)
         if existing_check is not None:
             raise errors.InterfaceError(
-                "check description must be used only once: %s" % _compat.text_repr(check_description),
+                _("check description must be used only once: %s") % _compat.text_repr(check_description),
                 self._location, "first declaration", existing_check.location)
         self._check_name_to_check_map[check_description] = check
         self._check_names.append(check_description)

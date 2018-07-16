@@ -33,6 +33,7 @@ from cutplace import ranges
 from cutplace import _compat
 from cutplace import _tools
 from cutplace._compat import python_2_unicode_compatible
+from cutplace.django_wrapper import ugettext as _
 
 #: Value for property ``line_delimiter`` to indicate any possible delimiter.
 ANY = "any"
@@ -120,7 +121,7 @@ class DataFormat(object):
 
         if format_name not in (_VALID_FORMATS + ['csv']):
             raise errors.InterfaceError(
-                'format is %s but must be on of: %s' % (format_name, _VALID_FORMATS),
+                _('format is %s but must be on of: %s') % (format_name, _VALID_FORMATS),
                 location if location is not None else errors.create_caller_location(['data']))
         # HACK: Treat ``format_name`` 'csv' as synonym for ``FORMAT_DELIMITED``.
         self._format = format_name if format_name != 'csv' else FORMAT_DELIMITED
@@ -340,7 +341,7 @@ class DataFormat(object):
         if property_attribute_name not in self.__dict__:
             valid_property_names = _tools.human_readable_list(list(self.__dict__.keys()))
             raise errors.InterfaceError(
-                'data format property %s for format %s is %s but must be one of %s'
+                _('data format property %s for format %s is %s but must be one of %s')
                 % (_compat.text_repr(name), self.format, _compat.text_repr(value), valid_property_names), location)
 
         if name == KEY_ENCODING:
@@ -348,7 +349,7 @@ class DataFormat(object):
                 codecs.lookup(value)
             except LookupError:
                 raise errors.InterfaceError(
-                    'value for data format property %s is %s but must be a valid encoding'
+                    _('value for data format property %s is %s but must be a valid encoding')
                     % (_compat.text_repr(KEY_ENCODING), _compat.text_repr(self.encoding)), location)
             self.encoding = value
         elif name == KEY_HEADER:
@@ -361,7 +362,7 @@ class DataFormat(object):
                 self._allowed_characters = ranges.Range(value)
             except errors.InterfaceError as error:
                 raise errors.InterfaceError(
-                    'data format property %s must be a valid range: %s'
+                    _('data format property %s must be a valid range: %s')
                     % (_compat.text_repr(KEY_ALLOWED_CHARACTERS), error), location)
         elif name == KEY_DECIMAL_SEPARATOR:
             self.decimal_separator = DataFormat._validated_choice(
@@ -373,7 +374,7 @@ class DataFormat(object):
             item_delimiter = DataFormat._validated_character(KEY_ITEM_DELIMITER, value, location)
             if item_delimiter == '\x00':
                 raise errors.InterfaceError(
-                    "data format property %s must not be 0 (to avoid zero termindated strings in Python's C based CSV reader)"
+                    _("data format property %s must not be 0 (to avoid zero termindated strings in Python's C based CSV reader)")
                     % _compat.text_repr(KEY_ITEM_DELIMITER), location)
             self.item_delimiter = item_delimiter
         elif name == KEY_LINE_DELIMITER:
@@ -381,7 +382,7 @@ class DataFormat(object):
                 self.line_delimiter = _TEXT_TO_LINE_DELIMITER_MAP[value.lower()]
             except KeyError:
                 raise errors.InterfaceError(
-                    'line delimiter %s must be changed to one of: %s'
+                    _('line delimiter %s must be changed to one of: %s')
                     % (_compat.text_repr(value), _tools.human_readable_list(self._VALID_LINE_DELIMITER_TEXTS)),
                     location)
         elif name == KEY_QUOTE_CHARACTER:
@@ -416,7 +417,7 @@ class DataFormat(object):
         result = value if not ignore_case else value.lower()
         if result not in choices:
             raise errors.InterfaceError(
-                'data format property %s is %s but must be one of: %s'
+                _('data format property %s is %s but must be one of: %s')
                 % (_compat.text_repr(key), _compat.text_repr(value), _tools.human_readable_list(choices)), location)
         return result
 
@@ -436,11 +437,11 @@ class DataFormat(object):
             result = int(value)
         except ValueError:
             raise errors.InterfaceError(
-                'data format property %s is %s but must be a number'
+                _('data format property %s is %s but must be a number')
                 % (_compat.text_repr(key), _compat.text_repr(value)), location)
         if result < 0:
             raise errors.InterfaceError(
-                'data format property %s is %d but must be at least 0' % (_compat.text_repr(key), result), location)
+                _('data format property %s is %d but must be at least 0') % (_compat.text_repr(key), result), location)
         return result
 
     @staticmethod
@@ -467,7 +468,7 @@ class DataFormat(object):
             next_token = next(tokens)
             if _tools.is_eof_token(next_token):
                 raise errors.InterfaceError(
-                    "value for %s must be specified" % name_for_errors, location)
+                    _("value for %s must be specified") % name_for_errors, location)
             next_type = next_token[0]
             next_value = next_token[1]
             if next_type == token.NAME:
@@ -480,13 +481,13 @@ class DataFormat(object):
                 result_code = ord(next_value)
             else:
                 raise errors.InterfaceError(
-                    'value for %s must a number, a single character or a symbolic name but is: %s'
+                    _('value for %s must a number, a single character or a symbolic name but is: %s')
                     % (name_for_errors, _compat.text_repr(value)), location)
             # Ensure there are no further tokens.
             next_token = next(tokens)
             if not _tools.is_eof_token(next_token):
                 raise errors.InterfaceError(
-                    'value for %s must be a single character but is: %s'
+                    _('value for %s must be a single character but is: %s')
                     % (name_for_errors, _compat.text_repr(value)), location)
         # TODO: Handle 'none' properly.
         assert result_code is not None
@@ -511,7 +512,7 @@ class DataFormat(object):
             value2 = self.__dict__['_' + name2]
             if value1 == value2:
                 raise errors.InterfaceError(
-                    "'%s' and '%s' are both %s but must be different from each other"
+                    _("'%s' and '%s' are both %s but must be different from each other")
                     % (name1, name2, _compat.text_repr(value1)))
 
         if self.format in (FORMAT_DELIMITED, FORMAT_FIXED):

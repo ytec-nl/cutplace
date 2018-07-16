@@ -31,6 +31,7 @@ from cutplace import errors
 from cutplace import _compat
 from cutplace import _tools
 from cutplace._compat import python_2_unicode_compatible
+from cutplace.django_wrapper import ugettext as _
 
 #: '...' as single character.
 ELLIPSIS = '\u2026'
@@ -75,7 +76,7 @@ def code_for_number_token(name, value, location):
         result = int(value, 0)
     except ValueError:
         raise errors.InterfaceError(
-            'numeric value for %s must be an integer number but is: %s' % (name, _compat.text_repr(value)), location)
+            _('numeric value for %s must be an integer number but is: %s') % (name, _compat.text_repr(value)), location)
     return result
 
 
@@ -97,7 +98,7 @@ def code_for_symbolic_token(name, value, location):
     except KeyError:
         valid_symbols = _tools.human_readable_list(sorted(errors.NAME_TO_ASCII_CODE_MAP.keys()))
         raise errors.InterfaceError(
-            'symbolic name %s for %s must be one of: %s' % (_compat.text_repr(value), name, valid_symbols), location)
+            _('symbolic name %s for %s must be one of: %s') % (_compat.text_repr(value), name, valid_symbols), location)
     return result
 
 
@@ -122,7 +123,7 @@ def code_for_string_token(name, value, location):
         value_without_quotes = value_without_quotes.encode('utf-8').decode('unicode_escape')
         if len(value_without_quotes) != 1:
             raise errors.InterfaceError(
-                'text for %s must be a single character but is: %s' % (name, _compat.text_repr(value)), location)
+                _('text for %s must be a single character but is: %s') % (name, _compat.text_repr(value)), location)
     return ord(value_without_quotes)
 
 
@@ -135,7 +136,7 @@ def create_range_from_length(length_range):
     if length_range.items is not None:
         if any((i[0] is not None and i[0] < 0) or (i[1] is not None and i[1] < 1) for i in length_range.items):
             raise errors.RangeValueError(
-                'length must be a positive range and upper limit has to be greater than one, but is: %s'
+                _('length must be a positive range and upper limit has to be greater than one, but is: %s')
                 % length_range.description)
 
         for item in length_range.items:
@@ -241,24 +242,24 @@ class Range(object):
                             value_as_int = ord(next_value)
                         else:
                             raise errors.InterfaceError(
-                                'value for %s must a number, a single character or a symbolic name but is: %s'
+                                _('value for %s must a number, a single character or a symbolic name but is: %s')
                                 % (name_for_code, _compat.text_repr(next_value)), location)
                         if ellipsis_found:
                             if upper is None:
                                 upper = value_as_int
                             else:
                                 raise errors.InterfaceError(
-                                    "range must have at most lower and upper limit but found another number: %s"
+                                    _("range must have at most lower and upper limit but found another number: %s")
                                     % _compat.text_repr(next_value), location)
                         elif lower is None:
                             lower = value_as_int
                         else:
                             raise errors.InterfaceError(
-                                "number must be followed by ellipsis (...) but found: %s"
+                                _("number must be followed by ellipsis (...) but found: %s")
                                 % _compat.text_repr(next_value), location)
                     elif after_hyphen:
                         raise errors.InterfaceError(
-                            "hyphen (-) must be followed by number but found: %s" % _compat.text_repr(next_value),
+                            _("hyphen (-) must be followed by number but found: %s") % _compat.text_repr(next_value),
                             location)
                     elif (next_type == token.OP) and (next_value == "-"):
                         after_hyphen = True
@@ -266,13 +267,13 @@ class Range(object):
                         ellipsis_found = True
                     else:
                         raise errors.InterfaceError(
-                            "range must be specified using integer numbers, text, "
-                            "symbols and ellipsis (...) but found: %s [token type: %d]"
+                            _("range must be specified using integer numbers, text, "
+                            "symbols and ellipsis (...) but found: %s [token type: %d]")
                             % (_compat.text_repr(next_value), next_type), location)
                     next_token = next(tokens)
 
                 if after_hyphen:
-                    raise errors.InterfaceError("hyphen (-) at end must be followed by number", location)
+                    raise errors.InterfaceError(_("hyphen (-) at end must be followed by number"), location)
 
                 # Decide upon the result.
                 if lower is None:
@@ -280,7 +281,7 @@ class Range(object):
                         if ellipsis_found:
                             # Handle "...".
                             raise errors.InterfaceError(
-                                'ellipsis (...) must be preceded and/or succeeded by number', location)
+                                _('ellipsis (...) must be preceded and/or succeeded by number'), location)
                         else:
                             # Handle "".
                             result = None
@@ -292,7 +293,7 @@ class Range(object):
                     # Handle "x..." and "x...y".
                     if (upper is not None) and (lower > upper):
                         raise errors.InterfaceError(
-                            "lower range %d must be greater or equal than upper range %d" % (lower, upper),
+                            _("lower range %d must be greater or equal than upper range %d") % (lower, upper),
                             location)
                     result = (lower, upper)
                 else:
@@ -304,7 +305,7 @@ class Range(object):
                             item_text = _compat.text_repr(self._repr_item(item))
                             result_text = _compat.text_repr(self._repr_item(result))
                             raise errors.InterfaceError(
-                                "overlapping parts in range must be cleaned up: %s and %s"
+                                _("overlapping parts in range must be cleaned up: %s and %s")
                                 % (item_text, result_text), location)
                     self._items.append(result)
                 if _tools.is_eof_token(next_token):
@@ -476,7 +477,7 @@ class Range(object):
                 item_index += 1
             if not is_valid:
                 raise errors.RangeValueError(
-                    "%s is %r but must be within range: %s" % (name, value, self), location)
+                    _("%s is %r but must be within range: %s") % (name, value, self), location)
 
 
 @python_2_unicode_compatible
@@ -553,7 +554,7 @@ class DecimalRange(Range):
                         if next_type == token.NUMBER:
                             try:
                                 decimal_value = decimal.Decimal(next_value)
-                                _, digits, exponent = decimal_value.as_tuple()
+                                _sign, digits, exponent = decimal_value.as_tuple()
                                 digits_after_dot = max(0, -exponent)
                                 if digits_after_dot > max_digits_after_dot:
                                     max_digits_after_dot = digits_after_dot
@@ -562,7 +563,7 @@ class DecimalRange(Range):
                                     max_digits_before_dot = digits_before_dot
                             except decimal.DecimalException:
                                 raise errors.InterfaceError(
-                                    "number must be an decimal or integer but is: %s"
+                                    _("number must be an decimal or integer but is: %s")
                                     % _compat.text_repr(next_value), location)
                             if after_hyphen:
                                 decimal_value = decimal_value.copy_negate()
@@ -573,17 +574,17 @@ class DecimalRange(Range):
                                 upper = decimal_value
                             else:
                                 raise errors.InterfaceError(
-                                    "range must have at most lower and upper limit but found another number: %s"
+                                    _("range must have at most lower and upper limit but found another number: %s")
                                     % _compat.text_repr(next_value), location)
                         elif lower is None:
                             lower = decimal_value
                         else:
                             raise errors.InterfaceError(
-                                "number must be followed by ellipsis (...) but found: %s"
+                                _("number must be followed by ellipsis (...) but found: %s")
                                 % _compat.text_repr(next_value))
                     elif after_hyphen:
                         raise errors.InterfaceError(
-                            "hyphen (-) must be followed by number but found: %s" % _compat.text_repr(next_value))
+                            _("hyphen (-) must be followed by number but found: %s") % _compat.text_repr(next_value))
                     elif (next_type == token.OP) and (next_value == "-"):
                         after_hyphen = True
                     elif next_value in (ELLIPSIS, ':'):
@@ -596,7 +597,7 @@ class DecimalRange(Range):
                     next_token = next(tokens)
 
                 if after_hyphen:
-                    raise errors.InterfaceError("hyphen (-) at end must be followed by number")
+                    raise errors.InterfaceError(_("hyphen (-) at end must be followed by number"))
 
                 # Decide upon the result.
                 if lower is None:
@@ -604,7 +605,7 @@ class DecimalRange(Range):
                         if ellipsis_found:
                             # Handle "...".
                             # TODO: Handle "..." same as ""?
-                            raise errors.InterfaceError("ellipsis (...) must be preceded and/or succeeded by number")
+                            raise errors.InterfaceError(_("ellipsis (...) must be preceded and/or succeeded by number"))
 
                     else:
                         assert ellipsis_found
@@ -614,7 +615,7 @@ class DecimalRange(Range):
                     # Handle "x..." and "x...y".
                     if (upper is not None) and (lower > upper):
                         raise errors.InterfaceError(
-                            "lower limit %s must be less or equal than upper limit %s"
+                            _("lower limit %s must be less or equal than upper limit %s")
                             % (_decimal_as_text(lower, self.precision), _decimal_as_text(upper, self.precision)))
                     range_item = (lower, upper)
                 else:
@@ -628,7 +629,7 @@ class DecimalRange(Range):
                             item_text = _compat.text_repr(self._repr_item(item))
                             result_text = _compat.text_repr(self._repr_item(range_item))
                             raise errors.InterfaceError(
-                                "overlapping parts in decimal range must be cleaned up: %s and %s"
+                                _("overlapping parts in decimal range must be cleaned up: %s and %s")
                                 % (item_text, result_text), location)
                     self._items.append(range_item)
                 if _tools.is_eof_token(next_token):
@@ -729,7 +730,7 @@ class DecimalRange(Range):
                 value_as_decimal = decimal.Decimal(value)
             except decimal.DecimalException:
                 raise errors.RangeValueError(
-                    "value must be decimal but is %s" % _compat.text_repr(value), location)
+                    _("value must be decimal but is %s") % _compat.text_repr(value), location)
         else:
             value_as_decimal = value
 
@@ -750,4 +751,4 @@ class DecimalRange(Range):
                 item_index += 1
             if not is_valid:
                 raise errors.RangeValueError(
-                    "%s is %r but must be within range: %r" % (name, value_as_decimal, self), location)
+                    _("%s is %r but must be within range: %r") % (name, value_as_decimal, self), location)

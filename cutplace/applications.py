@@ -35,6 +35,7 @@ from cutplace import rowio
 from cutplace import sql
 from cutplace import _tools
 from cutplace import __version__
+from cutplace.django_wrapper import ugettext as _
 
 DEFAULT_CID_ENCODING = 'utf-8'
 DEFAULT_LOG_LEVEL = 'info'
@@ -184,7 +185,7 @@ def process(argv=None):
             try:
                 cutplace_app.validate(data_path)
             except (EnvironmentError, OSError) as error:
-                raise EnvironmentError("cannot read data file %r: %s" % (data_path, error))
+                raise EnvironmentError(_("cannot read data file %r: %s") % (data_path, error))
         if not cutplace_app.all_validations_were_ok:
             result = 1
     return result

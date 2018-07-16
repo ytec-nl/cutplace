@@ -37,6 +37,7 @@ from cutplace import _compat
 from cutplace import _tools
 
 from cutplace._compat import python_2_unicode_compatible
+from cutplace.django_wrapper import ugettext as _
 
 # TODO #61: Replace various %r or '%s' by %s and apply _compat.text_repr().
 
@@ -178,9 +179,9 @@ class AbstractFieldFormat(object):
                 try:
                     valid_character_range.validate("character", character_code)
                 except errors.RangeValueError:
-                    raise errors.FieldValueError(
+                    raise errors.FieldValueError(_(
                         "character %s (code point U+%04x, decimal %d) in field '%s' at column %d must be an allowed "
-                        "character: %s" % (
+                        "character: %s") % (
                             _compat.text_repr(character), character_code, character_code, self.field_name,
                             character_column, valid_character_range))
 
@@ -195,7 +196,7 @@ class AbstractFieldFormat(object):
         """
         if not self.is_allowed_to_be_empty:
             if not value:
-                raise errors.FieldValueError("value must not be empty")
+                raise errors.FieldValueError(_("value must not be empty"))
 
     def validate_length(self, value):
         """
@@ -215,7 +216,7 @@ class AbstractFieldFormat(object):
                     fixed_length = self.length.lower_limit
                     if value_length > fixed_length:
                         raise errors.FieldValueError(
-                            'fixed format field must have at most %d characters instead of %d: %s'
+                            _('fixed format field must have at most %d characters instead of %d: %s')
                             % (fixed_length, value_length, _compat.text_repr(value))
                         )
                 else:
@@ -291,31 +292,31 @@ class ChoiceFieldFormat(AbstractFieldFormat):
                 else:
                     previous_toky_text = None
                 raise errors.InterfaceError(
-                    "choice value must precede a comma (,) but found: %s" % _compat.text_repr(previous_toky_text))
+                    _("choice value must precede a comma (,) but found: %s") % _compat.text_repr(previous_toky_text))
             choice = _tools.token_text(toky)
             if not choice:
                 raise errors.InterfaceError(
-                    "choice field must be allowed to be empty instead of containing an empty choice")
+                    _("choice field must be allowed to be empty instead of containing an empty choice"))
             self.choices.append(choice)
             toky = next(tokens)
             if not _tools.is_eof_token(toky):
                 if not _tools.is_comma_token(toky):
                     raise errors.InterfaceError(
-                        "comma (,) must follow choice value %s but found: %s"
+                        _("comma (,) must follow choice value %s but found: %s")
                         % (_compat.text_repr(choice), _compat.text_repr(toky[1])))
                 # Process next choice after comma.
                 toky = next(tokens)
                 if _tools.is_eof_token(toky):
-                    raise errors.InterfaceError("trailing comma (,) must be removed")
+                    raise errors.InterfaceError(_("trailing comma (,) must be removed"))
         if not self.is_allowed_to_be_empty and not self.choices:
-            raise errors.InterfaceError("choice field without any choices must be allowed to be empty")
+            raise errors.InterfaceError(_("choice field without any choices must be allowed to be empty"))
 
     def validated_value(self, value):
         assert value
 
         if value not in self.choices:
             raise errors.FieldValueError(
-                "value is %s but must be one of: %s"
+                _("value is %s but must be one of: %s")
                 % (_compat.text_repr(value), _tools.human_readable_list(self.choices)))
         return value
 
@@ -339,21 +340,21 @@ class ConstantFieldFormat(AbstractFieldFormat):
             toky = next(tokens)
             if not _tools.is_eof_token(toky):
                 raise errors.InterfaceError(
-                    'constant rule must be a single Python token but also found: %s'
+                    _('constant rule must be a single Python token but also found: %s')
                     % _compat.text_repr(_tools.token_text(toky)))
         has_empty_rule = (rule == '')
         if self.is_allowed_to_be_empty and not has_empty_rule:
             raise errors.InterfaceError(
-                'to describe a Constant that can be empty, use a Choice field with a single choice')
+                _('to describe a Constant that can be empty, use a Choice field with a single choice'))
         if not self.is_allowed_to_be_empty and has_empty_rule:
             raise errors.InterfaceError(
-                'field must be marked as empty to describe a constant empty value')
+                _('field must be marked as empty to describe a constant empty value'))
         try:
             self.length.validate(
-                'rule of constant field %s' % _compat.text_repr(self.field_name), len(self._constant))
+                _('rule of constant field %s') % _compat.text_repr(self.field_name), len(self._constant))
         except errors.RangeValueError:
             raise errors.InterfaceError(
-                'length is %s but must be %d to match constant %s'
+                _('length is %s but must be %d to match constant %s')
                 % (self.length, len(self._constant), _compat.text_repr(self._constant)))
 
     def validated_value(self, value):
@@ -397,16 +398,16 @@ class DecimalFieldFormat(AbstractFieldFormat):
             if character_to_process == self.decimal_separator:
                 if found_decimal_separator:
                     raise errors.FieldValueError(
-                        "decimal field must contain only one decimal separator (%s): %s"
+                        _("decimal field must contain only one decimal separator (%s): %s")
                         % (_compat.text_repr(self.decimal_separator), _compat.text_repr(value)))
                 translated_value += "."
                 found_decimal_separator = True
             elif self.thousands_separator and (character_to_process == self.thousands_separator):
                 if found_decimal_separator:
-                    raise errors.FieldValueError(
+                    raise errors.FieldValueError(_(
                         "decimal field must contain thousands separator (%r) only before "
                         "decimal separator (%r): %r "
-                        % (self.thousands_separator, self.decimal_separator, value))
+                        ) % (self.thousands_separator, self.decimal_separator, value))
             else:
                 translated_value += character_to_process
 
@@ -512,7 +513,7 @@ class IntegerFieldFormat(AbstractFieldFormat):
         try:
             value_as_int = int(value)
         except ValueError:
-            raise errors.FieldValueError("value must be an integer number: %s" % _compat.text_repr(value))
+            raise errors.FieldValueError(_("value must be an integer number: %s") % _compat.text_repr(value))
         try:
             self.valid_range.validate("value", value_as_int)
         except errors.RangeValueError as error:
@@ -570,7 +571,7 @@ class DateTimeFieldFormat(AbstractFieldFormat):
             result = time.strptime(value_to_validate, self.strptime_format)
         except ValueError:
             raise errors.FieldValueError(
-                "date must match format %s (%s) but is: %s (%s)"
+                _("date must match format %s (%s) but is: %s (%s)")
                 % (self.human_readable_format, self.strptime_format, _compat.text_repr(value_to_validate), sys.exc_info()[1]))
         return result
 
@@ -589,7 +590,7 @@ class RegExFieldFormat(AbstractFieldFormat):
 
         if not self.regex.match(value):
             raise errors.FieldValueError(
-                "value %s must match regular expression: %s"
+                _("value %s must match regular expression: %s")
                 % (_compat.text_repr(value), _compat.text_repr(self.rule)))
         return value
 
@@ -609,7 +610,7 @@ class PatternFieldFormat(AbstractFieldFormat):
 
         if not self.regex.match(value):
             raise errors.FieldValueError(
-                'value %s must match pattern: %s (regex %s)'
+                _('value %s must match pattern: %s (regex %s)')
                 % (_compat.text_repr(value), _compat.text_repr(self.rule), _compat.text_repr(self.pattern)))
         return value
 
@@ -646,7 +647,7 @@ def field_name_index(field_name_to_look_up, available_field_names, location):
         field_index = available_field_names.index(field_name_to_look_up)
     except ValueError:
         raise errors.InterfaceError(
-            'unknown field name %s must be replaced by one of: %s'
+            _('unknown field name %s must be replaced by one of: %s')
             % (_compat.text_repr(field_name_to_look_up), _tools.human_readable_list(available_field_names)),
             location)
     return field_index
@@ -661,22 +662,29 @@ def validated_field_name(supposed_field_name, location=None):
       invalid
     """
     field_name = supposed_field_name.strip()
-    basic_requirements_text = 'field name must be a valid Python name consisting of ASCII letters, ' \
-                              'underscore (_) and digits'
+    basic_requirements_text_but_is_empty = _(
+        'field name must be a valid Python name consisting of ASCII letters, ' \
+        'underscore (_) and digits but is empty'
+    )
+    basic_requirements_text_but_is_x = (
+        'field name must be a valid Python name consisting of ASCII letters, ' \
+        'underscore (_) and digits but is: %s'
+    )
+
     if field_name == '':
-        raise errors.InterfaceError(basic_requirements_text + 'but is empty', location)
+        raise errors.InterfaceError(basic_requirements_text_but_is_empty, location)
     if keyword.iskeyword(field_name):
-        raise errors.InterfaceError("field name must not be a Python keyword but is: '%s'" % field_name, location)
+        raise errors.InterfaceError(_("field name must not be a Python keyword but is: '%s'") % field_name, location)
     is_first_character = True
     for character in field_name:
         if is_first_character:
             if character not in _ASCII_LETTERS:
                 raise errors.InterfaceError(
-                    "field name must begin with a lower-case letter but is: %s"
+                    _("field name must begin with a lower-case letter but is: %s")
                     % _compat.text_repr(field_name), location)
             is_first_character = False
         else:
             if character not in _ASCII_LETTERS_DIGITS_AND_UNDERSCORE:
                 raise errors.InterfaceError(
-                    basic_requirements_text + 'but is: %s' % _compat.text_repr(field_name), location)
+                    basic_requirements_text_but_is_x % _compat.text_repr(field_name), location)
     return field_name

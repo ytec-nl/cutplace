@@ -23,13 +23,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+import glob
 import os
 import sys
+from subprocess import check_call
 from distutils.cmd import Command
 from distutils.filelist import FileList
 
 import setuptools
 from setuptools import setup
+from setuptools.command.build_py import build_py
 
 # For Python 2/3 compatibility, pity we can't use six.moves here
 try:  # try Python 3 imports first
@@ -201,6 +204,15 @@ def build_cmd_docs():
     return cmd_docs
 
 
+class BuildPyCommand(build_py):
+
+    def run(self):
+        build_py.run(self)
+        for po in glob.glob('build/lib/*/locale/*/*/*.po'):
+            mo = po[:-3] + '.mo'
+            check_call(['msgfmt', po, '-o', mo])
+
+
 # Assemble everything and call setup(...)
 def setup_package():
     docs_path = os.path.join(__location__, "docs")
@@ -223,7 +235,6 @@ def setup_package():
     }
 
     setup(name=package,
-          url=metadata['url'],
           description=metadata['description'],
           author=metadata['author'],
           author_email=metadata['author_email'],
@@ -236,13 +247,14 @@ def setup_package():
           install_requires=install_reqs,
           setup_requires=['six', 'setuptools_scm'] + pytest_runner,
           extras_require=extras_require,
-          cmdclass={'docs': build_cmd_docs(), 'doctest': build_cmd_docs()},
+          cmdclass={'docs': build_cmd_docs(), 'doctest': build_cmd_docs(), 'build_py': BuildPyCommand},
           tests_require=['pytest-cov', 'pytest'],
           package_data={package: metadata['package_data']},
           data_files=data_files,
           command_options=command_options,
           entry_points={'console_scripts': console_scripts},
           version=pyscaffold_version,
+          include_package_data=True,
           zip_safe=False)  # do not zip egg file after setup.py install
 
 

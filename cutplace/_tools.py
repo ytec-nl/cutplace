@@ -30,6 +30,7 @@ import tokenize
 import six
 
 from cutplace import _compat
+from cutplace.django_wrapper import ugettext as _
 
 
 #: Mapping for value of :option:`--log` to logging level.
@@ -75,14 +76,14 @@ def validated_python_name(name, value):
     next_type = next_token[0]
     result = next_token[1]
     if tokenize.ISEOF(next_type):
-        raise NameError("%s must not be empty but was: %r" % (name, value))
+        raise NameError(_("%s must not be empty but was: %r") % (name, value))
     if next_type != token.NAME:
-        raise NameError("%s must contain only ASCII letters, digits and underscore (_) but is: %r"
+        raise NameError(_("%s must contain only ASCII letters, digits and underscore (_) but is: %r")
                         % (name, value))
     second_token = next(toky)
     second_token_type = second_token[0]
     if not tokenize.ISEOF(second_token_type):
-        raise NameError("%s must be a single word, but after %r there also is %r" % (name, result, second_token[1]))
+        raise NameError(_("%s must be a single word, but after %r there also is %r") % (name, result, second_token[1]))
     return result
 
 

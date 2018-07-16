@@ -1,0 +1,593 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-16 16:13+0200\n"
+"PO-Revision-Date: 2018-07-16 16:13+0200\n"
+"Last-Translator: Ceesjan Luiten <ceesjan@ytec.nl>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: _tools.py:79
+#, python-format
+msgid "%s must not be empty but was: %r"
+msgstr ""
+
+#: _tools.py:81
+#, python-format
+msgid ""
+"%s must contain only ASCII letters, digits and underscore (_) but is: %r"
+msgstr ""
+
+#: _tools.py:86
+#, python-format
+msgid "%s must be a single word, but after %r there also is %r"
+msgstr ""
+
+#: applications.py:188
+#, python-format
+msgid "cannot read data file %r: %s"
+msgstr "kan data-bestand %r niet lezen: %s"
+
+#: checks.py:59
+msgid "field names must be specified before check"
+msgstr ""
+
+#: checks.py:186
+#, python-format
+msgid ""
+"field name must contain only ASCII letters, numbers and underscores (_) but "
+"found: %r [token type=%r]"
+msgstr ""
+
+#: checks.py:192
+#, python-format
+msgid "duplicate field name for unique check must be removed: %s"
+msgstr ""
+
+#: checks.py:200
+#, python-format
+msgid "after field name a comma (,) must follow but found: %r"
+msgstr ""
+
+#: checks.py:205
+msgid "rule must contain at least one field name to check for uniqueness"
+msgstr ""
+
+#: checks.py:215
+#, python-format
+msgid "values for %r must be unique: %s"
+msgstr ""
+
+#: checks.py:216
+msgid "location of first occurrence"
+msgstr ""
+
+#: checks.py:237
+#, python-format
+msgid "rule must start with a field name but found: %r"
+msgstr ""
+
+#: checks.py:265
+#, python-format
+msgid "cannot evaluate count expression %r: %s"
+msgstr ""
+
+#: checks.py:268
+#, python-format
+msgid "count expression %r must result in %r or %r, but test resulted in: %r"
+msgstr ""
+
+#: checks.py:282
+#, python-format
+msgid "distinct count is %d but check requires: %r"
+msgstr ""
+
+#: data.py:124
+#, python-format
+msgid "format is %s but must be on of: %s"
+msgstr ""
+
+#: data.py:344
+#, python-format
+msgid "data format property %s for format %s is %s but must be one of %s"
+msgstr ""
+
+#: data.py:352
+#, python-format
+msgid "value for data format property %s is %s but must be a valid encoding"
+msgstr ""
+
+#: data.py:365
+#, python-format
+msgid "data format property %s must be a valid range: %s"
+msgstr ""
+
+#: data.py:377
+#, python-format
+msgid ""
+"data format property %s must not be 0 (to avoid zero termindated strings in "
+"Python's C based CSV reader)"
+msgstr ""
+
+#: data.py:385
+#, python-format
+msgid "line delimiter %s must be changed to one of: %s"
+msgstr ""
+
+#: data.py:420
+#, python-format
+msgid "data format property %s is %s but must be one of: %s"
+msgstr ""
+
+#: data.py:440
+#, python-format
+msgid "data format property %s is %s but must be a number"
+msgstr ""
+
+#: data.py:444
+#, python-format
+msgid "data format property %s is %d but must be at least 0"
+msgstr ""
+
+#: data.py:471
+#, python-format
+msgid "value for %s must be specified"
+msgstr ""
+
+#: data.py:484 ranges.py:245
+#, python-format
+msgid ""
+"value for %s must a number, a single character or a symbolic name but is: %s"
+msgstr ""
+
+#: data.py:490
+#, python-format
+msgid "value for %s must be a single character but is: %s"
+msgstr ""
+
+#: data.py:515
+#, python-format
+msgid "'%s' and '%s' are both %s but must be different from each other"
+msgstr ""
+
+#: fields.py:183
+#, python-format
+msgid ""
+"character %s (code point U+%04x, decimal %d) in field '%s' at column %d must "
+"be an allowed character: %s"
+msgstr ""
+
+#: fields.py:199
+msgid "value must not be empty"
+msgstr ""
+
+#: fields.py:219
+#, python-format
+msgid "fixed format field must have at most %d characters instead of %d: %s"
+msgstr ""
+
+#: fields.py:295
+#, python-format
+msgid "choice value must precede a comma (,) but found: %s"
+msgstr ""
+
+#: fields.py:299
+msgid ""
+"choice field must be allowed to be empty instead of containing an empty "
+"choice"
+msgstr ""
+
+#: fields.py:305
+#, python-format
+msgid "comma (,) must follow choice value %s but found: %s"
+msgstr ""
+
+#: fields.py:310
+msgid "trailing comma (,) must be removed"
+msgstr ""
+
+#: fields.py:312
+msgid "choice field without any choices must be allowed to be empty"
+msgstr ""
+
+#: fields.py:319
+#, python-format
+msgid "value is %s but must be one of: %s"
+msgstr ""
+
+#: fields.py:343
+#, python-format
+msgid "constant rule must be a single Python token but also found: %s"
+msgstr ""
+
+#: fields.py:348
+msgid ""
+"to describe a Constant that can be empty, use a Choice field with a single "
+"choice"
+msgstr ""
+
+#: fields.py:351
+msgid "field must be marked as empty to describe a constant empty value"
+msgstr ""
+
+#: fields.py:354
+#, python-format
+msgid "rule of constant field %s"
+msgstr ""
+
+#: fields.py:357
+#, python-format
+msgid "length is %s but must be %d to match constant %s"
+msgstr ""
+
+#: fields.py:401
+#, python-format
+msgid "decimal field must contain only one decimal separator (%s): %s"
+msgstr ""
+
+#: fields.py:408
+#, python-format
+msgid ""
+"decimal field must contain thousands separator (%r) only before decimal "
+"separator (%r): %r "
+msgstr ""
+
+#: fields.py:516
+#, python-format
+msgid "value must be an integer number: %s"
+msgstr ""
+
+#: fields.py:574
+#, python-format
+msgid "date must match format %s (%s) but is: %s (%s)"
+msgstr ""
+
+#: fields.py:593
+#, python-format
+msgid "value %s must match regular expression: %s"
+msgstr ""
+
+#: fields.py:613
+#, python-format
+msgid "value %s must match pattern: %s (regex %s)"
+msgstr ""
+
+#: fields.py:650
+#, python-format
+msgid "unknown field name %s must be replaced by one of: %s"
+msgstr ""
+
+#: fields.py:666
+msgid ""
+"field name must be a valid Python name consisting of ASCII letters, "
+"underscore (_) and digits but is empty"
+msgstr ""
+
+#: fields.py:677
+#, python-format
+msgid "field name must not be a Python keyword but is: '%s'"
+msgstr ""
+
+#: fields.py:683
+#, python-format
+msgid "field name must begin with a lower-case letter but is: %s"
+msgstr ""
+
+#: interface.py:169
+#, python-format
+msgid "clashing plugin class names must be resolved: %s and %s"
+msgstr ""
+
+#: interface.py:185
+#, python-format
+msgid "cannot find class for %s %s: related class is %s but must be one of: %s"
+msgstr ""
+
+#: interface.py:215
+msgid "name of data format property must be specified"
+msgstr ""
+
+#: interface.py:224
+#, python-format
+msgid "data format already is %s and must be set only once"
+msgstr ""
+
+#: interface.py:269
+#, python-format
+msgid "CID row type is \"%s\" but must be empty or one of: C, D, or F"
+msgstr ""
+
+#: interface.py:272
+msgid "data format must be specified"
+msgstr ""
+
+#: interface.py:275
+msgid "fields must be specified"
+msgstr ""
+
+#: interface.py:324
+msgid "data format must be specified before first field"
+msgstr ""
+
+#: interface.py:343
+#, python-format
+msgid "duplicate field name must be changed to a unique one: %s"
+msgstr ""
+
+#: interface.py:358
+#, python-format
+msgid "mark for empty field must be %s or empty but is %s"
+msgstr ""
+
+#: interface.py:402
+#, python-format
+msgid "length of field %s must be specified with fixed data format"
+msgstr ""
+
+#: interface.py:406
+#, python-format
+msgid ""
+"length of field %s for fixed data format must be a specific number but is: %s"
+msgstr ""
+
+#: interface.py:410
+#, python-format
+msgid "length of field %s for fixed data format must be at least 1 but is: %d"
+msgstr ""
+
+#: interface.py:415
+#, python-format
+msgid "lower limit for length of field %s must be at least 0 but is: %d"
+msgstr ""
+
+#: interface.py:421
+#, python-format
+msgid "upper limit for length of field %s must be at least 0 but is: %d"
+msgstr ""
+
+#: interface.py:431
+#, python-format
+msgid "cannot validate example for field %s: %s"
+msgstr "kan voorbeeld voor veld %s niet valideren: %s"
+
+#: interface.py:481
+msgid "check description must be specified"
+msgstr ""
+
+#: interface.py:487
+#, python-format
+msgid "check type is '%s' but must be one of: %s"
+msgstr ""
+
+#: interface.py:498
+#, python-format
+msgid "check description must be used only once: %s"
+msgstr ""
+
+#: ranges.py:79
+#, python-format
+msgid "numeric value for %s must be an integer number but is: %s"
+msgstr ""
+
+#: ranges.py:101
+#, python-format
+msgid "symbolic name %s for %s must be one of: %s"
+msgstr ""
+
+#: ranges.py:126
+#, python-format
+msgid "text for %s must be a single character but is: %s"
+msgstr ""
+
+#: ranges.py:139
+#, python-format
+msgid ""
+"length must be a positive range and upper limit has to be greater than one, "
+"but is: %s"
+msgstr ""
+
+#: ranges.py:252 ranges.py:577
+#, python-format
+msgid ""
+"range must have at most lower and upper limit but found another number: %s"
+msgstr ""
+
+#: ranges.py:258 ranges.py:583
+#, python-format
+msgid "number must be followed by ellipsis (...) but found: %s"
+msgstr ""
+
+#: ranges.py:262 ranges.py:587
+#, python-format
+msgid "hyphen (-) must be followed by number but found: %s"
+msgstr ""
+
+#: ranges.py:270
+#, python-format
+msgid ""
+"range must be specified using integer numbers, text, symbols and ellipsis "
+"(...) but found: %s [token type: %d]"
+msgstr ""
+
+#: ranges.py:276 ranges.py:600
+msgid "hyphen (-) at end must be followed by number"
+msgstr ""
+
+#: ranges.py:284 ranges.py:608
+msgid "ellipsis (...) must be preceded and/or succeeded by number"
+msgstr ""
+
+#: ranges.py:296
+#, python-format
+msgid "lower range %d must be greater or equal than upper range %d"
+msgstr ""
+
+#: ranges.py:308
+#, python-format
+msgid "overlapping parts in range must be cleaned up: %s and %s"
+msgstr ""
+
+#: ranges.py:480
+#, python-format
+msgid "%s is %r but must be within range: %s"
+msgstr ""
+
+#: ranges.py:566
+#, python-format
+msgid "number must be an decimal or integer but is: %s"
+msgstr ""
+
+#: ranges.py:618
+#, python-format
+msgid "lower limit %s must be less or equal than upper limit %s"
+msgstr ""
+
+#: ranges.py:632
+#, python-format
+msgid "overlapping parts in decimal range must be cleaned up: %s and %s"
+msgstr ""
+
+#: ranges.py:733
+#, python-format
+msgid "value must be decimal but is %s"
+msgstr ""
+
+#: ranges.py:754
+#, python-format
+msgid "%s is %r but must be within range: %r"
+msgstr ""
+
+#: rowio.py:161
+#, python-format
+msgid "cannot read Excel file: %s"
+msgstr "kan Excel-bestand niet lezen: %s"
+
+#: rowio.py:163
+#, python-format
+msgid "cannot decode Excel data: %s"
+msgstr "kan Excel-data niet decoderen: %s"
+
+#: rowio.py:171
+#, python-format
+msgid "cannot parse delimited file: %s"
+msgstr "kan gescheiden bestand niet verwerken: %s"
+
+#: rowio.py:260
+#, python-format
+msgid "cannot extract content.xml for ODS spreadsheet: %s"
+msgstr ""
+
+#: rowio.py:264
+#, python-format
+msgid "cannot uncompress ODS spreadsheet: %s"
+msgstr ""
+
+#: rowio.py:270
+#, python-format
+msgid "cannot parse content.xml: %s"
+msgstr "kan content.xml niet verwerken: %s"
+
+#: rowio.py:293
+#, python-format
+msgid "table:number-columns-repeated is %s but must be at least 1"
+msgstr ""
+
+#: rowio.py:297
+#, python-format
+msgid "table:number-columns-repeated is %s but must be an integer"
+msgstr ""
+
+#: rowio.py:385
+#, python-format
+msgid "line delimiter is %s but must be one of: %s"
+msgstr ""
+
+#: rowio.py:389
+#, python-format
+msgid "line delimiter is %s but must be %s"
+msgstr ""
+
+#: rowio.py:430
+#, python-format
+msgid "after field '%s' %d characters must follow for: %s"
+msgstr ""
+
+#: rowio.py:441
+#, python-format
+msgid "cannot read field '%s': need %d characters but found only %d: %s"
+msgstr ""
+
+#: rowio.py:468
+msgid "ODS from io.BytesIO"
+msgstr ""
+
+#: rowio.py:574 rowio.py:636
+#, python-format
+msgid "cannot write data row: %s; row=%s"
+msgstr ""
+
+#: validio.py:123
+#, python-format
+msgid "row must contain %d fields but only has %d: %s"
+msgstr ""
+
+#: validio.py:128
+#, python-format
+msgid "row must contain %d fields but has %d, additional values are: %s"
+msgstr ""
+
+#: validio.py:139
+#, python-format
+msgid "type must be %s instead of %s: %s"
+msgstr ""
+
+#: validio.py:183
+#, python-brace-format
+msgid ""
+"\n"
+"The following columns are missing:\n"
+"  {missing}"
+msgstr ""
+
+#: validio.py:187
+#, python-brace-format
+msgid ""
+"\n"
+"The following columns are unexpected:\n"
+"  {unexpected}"
+msgstr ""
+
+#: validio.py:190
+#, python-brace-format
+msgid ""
+"The following columns are expected in the header row:\n"
+"  {expected}"
+msgstr ""
+
+#: validio.py:193
+#, python-brace-format
+msgid ""
+"\n"
+"The order of the columns does not match. The following columns were "
+"received:\n"
+"  {actual}"
+msgstr ""
+
+#: validio.py:297
+#, python-brace-format
+msgid ""
+"Cannot validate the header row, when 'Header' is set to '{count}'. Either "
+"set 'Header' to '1' or disable header validation with 'Validate header row "
+"against field names' set to 'False'."
+msgstr ""
