@@ -8,6 +8,10 @@
 __pycache__/*
 .cache/*
 .*.swp
+/virtualenv
+/virtualenv2
+/virtualenv3
+/.pytest_cache
 
 # Project files
 .ropeproject
