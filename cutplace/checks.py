@@ -177,7 +177,7 @@ class IsUniqueCheck(AbstractCheck):
         after_comma = True
         next_token = next(toky)
         unique_field_names = set()
-        while not _tools.is_eof_token(next_token):
+        while (not _tools.is_eof_token(next_token)) and (next_token[0] != tokenize.NEWLINE):
             token_type = next_token[0]
             token_value = next_token[1]
             if after_comma:

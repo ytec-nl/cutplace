@@ -485,7 +485,7 @@ class DataFormat(object):
                     % (name_for_errors, _compat.text_repr(value)), location)
             # Ensure there are no further tokens.
             next_token = next(tokens)
-            if not _tools.is_eof_token(next_token):
+            if (not _tools.is_eof_token(next_token)) and (next_token[0] != tokenize.NEWLINE):
                 raise errors.InterfaceError(
                     _('value for %s must be a single character but is: %s')
                     % (name_for_errors, _compat.text_repr(value)), location)
