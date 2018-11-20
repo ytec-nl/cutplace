@@ -82,7 +82,7 @@ def validated_python_name(name, value):
                         % (name, value))
     second_token = next(toky)
     second_token_type = second_token[0]
-    if not tokenize.ISEOF(second_token_type):
+    if (not tokenize.ISEOF(second_token_type)) and (second_token_type != tokenize.NEWLINE):
         raise NameError(_("%s must be a single word, but after %r there also is %r") % (name, result, second_token[1]))
     return result
 
