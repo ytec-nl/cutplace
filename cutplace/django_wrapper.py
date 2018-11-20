@@ -5,7 +5,7 @@ try:
     def ugettext(untranslated):
         try:
             return _ugettext(untranslated)
-        except ImproperlyConfigured:
+        except (ImproperlyConfigured, ModuleNotFoundError):
             return untranslated
 except ImportError:
     def ugettext(untranslated):
